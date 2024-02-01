@@ -5,13 +5,21 @@ import com.encore.ordering.member.domain.Member;
 import com.encore.ordering.member.domain.Role;
 import com.encore.ordering.member.dto.LoginReqDto;
 import com.encore.ordering.member.dto.MemberCreateReqDto;
+import com.encore.ordering.member.dto.MemberResponseDto;
 import com.encore.ordering.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import static com.encore.ordering.member.dto.MemberResponseDto.toMemberResponseDto;
 
 @Service
 @Transactional
@@ -21,24 +29,26 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
-
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
-
     }
 
     public Member create(MemberCreateReqDto memberCreateReqDto){
-        // Address 조립, 필수 입력이 아니라 null이 들어있을 수도 있음
-        Address address = new Address(memberCreateReqDto.getCity(), memberCreateReqDto.getStreet(), memberCreateReqDto.getZipcode());
-
-        Member member = Member.builder()
-              .name(memberCreateReqDto.getName())
-              .email(memberCreateReqDto.getEmail())
-              .password(passwordEncoder.encode(memberCreateReqDto.getPassword()))
-              .address(address)
-              .role(Role.USER)
-              .build();
+        memberCreateReqDto.setPassword(passwordEncoder.encode(memberCreateReqDto.getPassword()));
+        Member member = Member.toEntity(memberCreateReqDto);
         return memberRepository.save(member);
+    }
+
+    public MemberResponseDto findMyInfo(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        return toMemberResponseDto(member);
+    }
+
+    public List<MemberResponseDto> findAll(){
+        List<Member> members = memberRepository.findAll();
+        return members.stream().map(m -> MemberResponseDto.toMemberResponseDto(m)).collect(Collectors.toList());
     }
 
     public Member login(LoginReqDto loginReqDto) throws IllegalArgumentException{

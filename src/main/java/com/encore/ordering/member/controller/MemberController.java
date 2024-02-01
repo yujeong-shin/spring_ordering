@@ -4,17 +4,17 @@ import com.encore.ordering.common.ResponseDto;
 import com.encore.ordering.member.domain.Member;
 import com.encore.ordering.member.dto.LoginReqDto;
 import com.encore.ordering.member.dto.MemberCreateReqDto;
+import com.encore.ordering.member.dto.MemberResponseDto;
 import com.encore.ordering.member.service.MemberService;
 import com.encore.ordering.securities.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,10 +34,19 @@ public class MemberController {
         return new ResponseEntity<>(new ResponseDto(HttpStatus.CREATED, "member is successfully created", member.getId()), HttpStatus.CREATED);
     }
 
-    @PostMapping("/members")
-    public String members(){
-        return "ok";
+    @GetMapping("/members")
+    public List<MemberResponseDto> members(){
+        return memberService.findAll();
     }
+
+    @GetMapping("/member/myInfo")
+    public MemberResponseDto findMyInfo(){
+        return memberService.findMyInfo();
+    }
+
+//    @GetMapping("/member/{id}/orders")
+
+//    @GetMapping("/member/myorders")
 
     @PostMapping("/doLogin")
     public ResponseEntity<ResponseDto> memberLogin(@Valid @RequestBody LoginReqDto loginReqDto){
