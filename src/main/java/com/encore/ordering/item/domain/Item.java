@@ -37,6 +37,14 @@ public class Item {
         this.delYn = "Y";
     }
 
+    public void updateItem(String name, String category, int price, int stockQuantity, String imagePath){
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.imagePath = imagePath;
+    }
+
     //연산은 서비스 단에서 하고, Entity에는 의미 최소 기능에 충실하자.
     public void updateStockQuantity(int newQuantity){
         this.stockQuantity = newQuantity;

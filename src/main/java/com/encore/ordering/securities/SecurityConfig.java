@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .httpBasic().disable() //기본 Http Configuarer
                 .authorizeRequests()
                 //인증 미적용 url 패턴
-                .antMatchers("/member/create", "/doLogin", "/items", "/item/image/**")
+                .antMatchers("/member/create", "/doLogin", "/items", "/item/*/image")
                     .permitAll()
                 .anyRequest().authenticated()
                 .and()
