@@ -1,6 +1,6 @@
 package com.encore.ordering.member.controller;
 
-import com.encore.ordering.common.ResponseDto;
+import com.encore.ordering.common.CommonResponse;
 import com.encore.ordering.member.domain.Member;
 import com.encore.ordering.member.dto.LoginReqDto;
 import com.encore.ordering.member.dto.MemberCreateReqDto;
@@ -29,10 +29,10 @@ public class MemberController {
     }
 
     @PostMapping("/member/create")
-    public ResponseEntity<ResponseDto> memberCreate(@Valid @RequestBody MemberCreateReqDto memberCreateReqDto){
+    public ResponseEntity<CommonResponse> memberCreate(@Valid @RequestBody MemberCreateReqDto memberCreateReqDto){
         Member member = memberService.create(memberCreateReqDto);
         //ResponseDto 객체에 담긴 값은 header로 나가고, body에 담긴 Map은 json 형태로 나감.
-        return new ResponseEntity<>(new ResponseDto(HttpStatus.CREATED, "member is successfully created", member.getId()), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "member is successfully created", member.getId()), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -51,12 +51,12 @@ public class MemberController {
 //    @GetMapping("/member/myorders")
 
     @PostMapping("/doLogin")
-    public ResponseEntity<ResponseDto> memberLogin(@Valid @RequestBody LoginReqDto loginReqDto){
+    public ResponseEntity<CommonResponse> memberLogin(@Valid @RequestBody LoginReqDto loginReqDto){
         Member member = memberService.login(loginReqDto);
         String jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole().toString());
         Map<String, Object> member_info = new HashMap<>();
         member_info.put("id", member.getId());
         member_info.put("token", jwtToken);
-        return new ResponseEntity<>(new ResponseDto(HttpStatus.OK, "member is successfully logined", member_info), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "member is successfully logined", member_info), HttpStatus.OK);
     }
 }
