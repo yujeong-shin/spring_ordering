@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +26,8 @@ import java.util.List;
 
 @Component
 public class JwtAuthFilter extends GenericFilter {
+    @Value("${jwt.secretKey}")
+    private String secretKey;
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try{
@@ -40,7 +43,7 @@ public class JwtAuthFilter extends GenericFilter {
                 //Body = claims = Payload 비슷한 개념
                 //Body를 꺼내는 과정에서 재암호화한 값과 사용자가 들고 들어온 token 값이 일치하는지 검증이 자동으로 됨
                 //검증 코드는 없지만, 내부적으로 에러나면 에러 터짐.
-                Claims claims = Jwts.parser().setSigningKey("mysecret").parseClaimsJws(token).getBody();
+                Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
 
                 //Authentication 객체를 생성하기 위한 UserDetails 생성⭐⭐
                 //사용자 정보를 Authentication 객체 안에 삽입 -> order, ... 등 다른 부분에서 사용.

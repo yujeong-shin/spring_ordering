@@ -11,7 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true) //pre : 사전, post : 사후, 사전/사후에 인증/권한 검사 어노테이션 사용 가능 ex.@PreAuthorize("hasRole('ADMIN')")
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+//pre : 사전, post : 사후, 사전/사후에 인증/권한 검사 어노테이션 사용 가능 ex.@PreAuthorize("hasRole('ADMIN')")
 public class SecurityConfig {
     private final JwtAuthFilter authFilter;
 
@@ -43,6 +44,11 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 //custom filter는 인증 미적용 url 이더라도 무조건 실행된다
+
+                //UsernamePasswordAuthenticationFilter전에 authFilter를 실행
+                //UsernamePasswordAuthenticationFilter : form 로그인에서 기본적으로 사용하는 필터
+                //RestAPI패턴에서는 form 형식이 아니라? 구현하진 않지만(MVC는 사용)
+                //내부적으로 무의미하게 실행된다. 그 전에 내 필터를 걸어주면 좋음.
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

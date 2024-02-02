@@ -10,6 +10,7 @@ import com.encore.ordering.securities.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -34,6 +35,7 @@ public class MemberController {
         return new ResponseEntity<>(new ResponseDto(HttpStatus.CREATED, "member is successfully created", member.getId()), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/members")
     public List<MemberResponseDto> members(){
         return memberService.findAll();
