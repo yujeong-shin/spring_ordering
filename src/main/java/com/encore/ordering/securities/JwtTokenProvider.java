@@ -32,7 +32,7 @@ public class JwtTokenProvider {
         jwtBuilder.setClaims(claims);
         jwtBuilder.setIssuedAt(now);
         jwtBuilder.setExpiration(new Date(now.getTime() + expiration*60*1000L));
-        jwtBuilder.signWith(SignatureAlgorithm.HS256, "mysecret");
+        jwtBuilder.signWith(SignatureAlgorithm.HS256, secretKey);
         return jwtBuilder.compact();
 
 //        String token = Jwts.builder()
