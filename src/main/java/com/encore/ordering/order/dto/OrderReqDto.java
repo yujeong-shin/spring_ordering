@@ -23,7 +23,8 @@ import java.util.List;
 @Data
 public class OrderReqDto {
     private List<OrderReqItemDto> orderReqItemDtos;
-    private static class OrderReqItemDto{
+    @Data
+    public static class OrderReqItemDto{
         private Long itemId;
         private int count;
     }
